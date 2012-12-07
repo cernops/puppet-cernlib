@@ -41,5 +41,6 @@ module Puppet::Parser::Functions
     end
     # r.detect {|h| h["key"] == "voms116.cern.ch"}
     j['rows'].detect {|h| h["key"] == client_hostname }
+    end
   end
 end
