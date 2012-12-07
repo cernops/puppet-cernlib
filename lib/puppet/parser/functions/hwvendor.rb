@@ -18,7 +18,8 @@ module Puppet::Parser::Functions
     end
 
     unless client_hostname
-    client_hostname = lookupvar('fqdn')
+      client_hostname = lookupvar('fqdn')
+    end
 
     cert = OpenSSL::X509::Certificate.new(File.open(Puppet.settings[:hostcert]))
     key = OpenSSL::PKey::RSA.new(File.open(Puppet.settings[:hostprivkey]))
@@ -41,6 +42,5 @@ module Puppet::Parser::Functions
     end
     # r.detect {|h| h["key"] == "voms116.cern.ch"}
     j['rows'].detect {|h| h["key"] == client_hostname }
-    end
   end
 end
