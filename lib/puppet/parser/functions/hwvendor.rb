@@ -2,7 +2,7 @@
 #
 # example usage:
 #
-# $vendor = cern_hwvendor([url])
+# $vendor = cern_hwvendor([fqdn])
 
 require "net/https"
 require "uri"
@@ -12,10 +12,12 @@ require "json"
 module Puppet::Parser::Functions
   newfunction(:cern_hwvendor, :type => :rvalue) do |args|
     url = 'https://hwcollect.cern.ch:9000/hwinfo/_design/hwinfo/_view/hwhosts'
+    client_hostname = false
     if args
-      url = args[0]
+      client_hostname = args[0]
     end
 
+    unless client_hostname
     client_hostname = lookupvar('fqdn')
 
     cert = OpenSSL::X509::Certificate.new(File.open(Puppet.settings[:hostcert]))
