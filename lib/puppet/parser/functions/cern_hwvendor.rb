@@ -38,9 +38,14 @@ module Puppet::Parser::Functions
         j = JSON.parse(http.request(request).body)
       }
     rescue Exception => e
-      raise Puppet::ParseError, "Failed to contact Foreman #{e}"
+      raise Puppet::ParseError, "Failed to contact hardware database #{e}"
     end
     # r.detect {|h| h["key"] == "voms116.cern.ch"}
-    j['rows'].detect {|h| h["key"] == client_hostname }
+    ans = j['rows'].detect {|h| h["key"] == client_hostname }
+    if ans
+      return ans["value"]["VENDOR"].downcase
+    else
+      return "NOT_FOUND"
+    end
   end
 end
