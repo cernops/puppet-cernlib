@@ -41,6 +41,9 @@ module Puppet::Parser::Functions
       raise Puppet::ParseError, "Failed to contact hardware database #{e}"
     end
     # r.detect {|h| h["key"] == "voms116.cern.ch"}
+    unless j
+      return "NOT_FOUND"
+    end
     ans = j['rows'].detect {|h| h["key"] == client_hostname }
     if ans
       return ans["value"]["VENDOR"].downcase
