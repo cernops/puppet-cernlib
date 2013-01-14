@@ -26,6 +26,10 @@ Rerurns an array of usernames following the expansion of an
        egroupexpand('ai-admins','%u@CERN.CH',true)
      will return an array ['straylen@CERN.CH','mccance@CERN.CH']
 
+Load class if exists
+--------------------
+
+Loads a class if the class is available.  
 
 Contact
 -------
