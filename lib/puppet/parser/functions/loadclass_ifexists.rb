@@ -5,7 +5,7 @@ module Puppet::Parser::Functions
       
     begin
       function_ensure_resource(['class',args[0]])
-    rescue
+    rescue ArgumentError
     end  
     
   end 
