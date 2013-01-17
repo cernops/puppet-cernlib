@@ -11,7 +11,8 @@ require "json"
 
 module Puppet::Parser::Functions
   newfunction(:cern_hwvendor, :type => :rvalue) do |args|
-    url = 'https://hwcollect.cern.ch:9000/hwinfo/_design/hwinfo/_view/hwhosts'
+    MISSING = "NOT_FOUND"
+    cache_file = '/var/cache/hwdb_cache/cache'
     client_hostname = false
     if args.is_a?(Array) and not args.empty?
       client_hostname = args[0]
@@ -21,31 +22,15 @@ module Puppet::Parser::Functions
       client_hostname = lookupvar('fqdn')
     end
 
-    MISSING = "NOT_FOUND"
-
-    cert = OpenSSL::X509::Certificate.new(File.open(Puppet.settings[:hostcert]))
-    key = OpenSSL::PKey::RSA.new(File.open(Puppet.settings[:hostprivkey]))
-    uri = URI.parse(url)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.cert = cert
-    http.key = key
-    # maybe we should verify, but puppet occasionally seems to have problems with
-    # ssl trust chains. So I'm chickening out
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Get.new(uri.request_uri)
-
     j = nil
-    begin
-      Timeout::timeout(5) {
-        j = JSON.parse(http.request(request).body)
-      }
-    rescue Exception => e
-      raise Puppet::ParseError, "Failed to contact hardware database #{e}"
-    end
-    # r.detect {|h| h["key"] == "voms116.cern.ch"}
-    unless j
+    unless File.exists?(cache_file)
       return MISSING
+    end
+
+    j = JSON.parse(File.open(cache_file).read)
+    # r.detect {|h| h["key"] == "voms116.cern.ch"}
+    unless j.is_a?(Hash) and j.has_key?("rows")
+      raise Puppet::ParseError, "hardware database cache contains invalid data"
     end
     ans = j['rows'].detect {|h| h["key"] == client_hostname }
     if ans
