@@ -4,9 +4,6 @@
 #
 # $vendor = cern_hwvendor([fqdn])
 
-require "net/https"
-require "uri"
-require "timeout"
 require "json"
 
 module Puppet::Parser::Functions
@@ -22,7 +19,6 @@ module Puppet::Parser::Functions
       client_hostname = lookupvar('fqdn')
     end
 
-    j = nil
     unless File.exists?(cache_file)
       return MISSING
     end
