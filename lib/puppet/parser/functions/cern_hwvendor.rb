@@ -4,6 +4,7 @@
 #
 # $vendor = cern_hwvendor([fqdn])
 
+require "rubygems"
 require "json"
 
 module Puppet::Parser::Functions
